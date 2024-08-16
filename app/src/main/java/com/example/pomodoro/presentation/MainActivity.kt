@@ -71,7 +71,8 @@ fun WearApp() {
 
 @Composable
 fun Counter() {
-    val startTime = 5 * 60
+    var mode by remember { mutableIntStateOf(0) }
+    var startTime by remember { mutableIntStateOf(25 * 60) }
     var timeLeft by remember { mutableIntStateOf(startTime) }
     var isRunning by remember { mutableStateOf(false) }
 
@@ -80,10 +81,14 @@ fun Counter() {
         isRunning = !isRunning
     }
 
-    // Function to reset the timer
-    fun resetTimer() {
-        timeLeft = startTime
+    fun finish() {
         isRunning = false
+
+        startTime = if (mode == 0) 25 * 60 else 5 * 60
+        timeLeft = if (mode == 0) 25 * 60 else 5 * 60
+
+        mode = if (mode == 0) 1 else 0
+
     }
 
     // Timer countdown logic
@@ -92,6 +97,9 @@ fun Counter() {
             while (isRunning && timeLeft > 0) {
                 delay(1000L)
                 timeLeft -= 1
+            }
+            if (timeLeft == 0) {
+                finish()
             }
         }
     }
@@ -106,7 +114,7 @@ fun Counter() {
             modifier = Modifier
                 .fillMaxSize(),
             startAngle = 270f,
-            progress = timeLeft / startTime.toFloat(),
+            progress = timeLeft.toFloat() / startTime.toFloat(),
             strokeWidth = ProgressIndicatorDefaults.FullScreenStrokeWidth
         )
 
@@ -131,12 +139,12 @@ fun Counter() {
                 .padding(bottom = 24.dp)
         ) {
             OutlinedButton(
-                onClick = { resetTimer() },
+                onClick = { finish() },
                 modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_stop_30),
-                    contentDescription = "Start",
+                    painter = painterResource(id = R.drawable.baseline_check_30),
+                    contentDescription = "Finish",
                     modifier = Modifier.size(ButtonDefaults.LargeIconSize)
                 )
             }
