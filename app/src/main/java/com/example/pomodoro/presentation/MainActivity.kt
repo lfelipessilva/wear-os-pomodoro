@@ -3,10 +3,20 @@ package com.example.pomodoro.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -14,7 +24,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.*
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.ButtonDefaults
+import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.OutlinedButton
+import androidx.wear.compose.material.ProgressIndicatorDefaults
+import androidx.wear.compose.material.Text
 import com.example.pomodoro.R
 import com.example.pomodoro.presentation.theme.PomodoroTheme
 import kotlinx.coroutines.delay
@@ -86,8 +104,7 @@ fun Counter() {
     Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(4.dp),
+                .fillMaxSize(),
             startAngle = 270f,
             progress = timeLeft / startTime.toFloat(),
             strokeWidth = ProgressIndicatorDefaults.FullScreenStrokeWidth
@@ -98,14 +115,20 @@ fun Counter() {
             style = MaterialTheme.typography.display1,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colors.primary,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(bottom = 24.dp)
         )
 
         Row(
-
-                    verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(space = 4.dp,alignment = Alignment.CenterHorizontally ),
-            modifier = Modifier.fillMaxSize()
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 8.dp,
+                alignment = Alignment.CenterHorizontally
+            ),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 24.dp)
         ) {
             OutlinedButton(
                 onClick = { resetTimer() },
@@ -122,7 +145,8 @@ fun Counter() {
                 onClick = { playPauseTimer() },
                 modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
             ) {
-                val iconId = if (isRunning) R.drawable.baseline_pause_30 else R.drawable.baseline_play_arrow_30
+                val iconId =
+                    if (isRunning) R.drawable.baseline_pause_30 else R.drawable.baseline_play_arrow_30
                 val contentDescription = if (isRunning) "Pause" else "Play"
 
                 Icon(
@@ -132,6 +156,7 @@ fun Counter() {
                 )
             }
         }
+
     }
 }
 
