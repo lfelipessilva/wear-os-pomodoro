@@ -2,6 +2,8 @@
 agp = "8.5.1"
 horologistComposables = "0.6.17"
 kotlin = "1.9.0"
+material3 = "1.2.1"
+navigationCompose = "2.7.7"
 playServicesWearable = "18.0.0"
 composeBom = "2024.04.01"
 composeMaterial = "1.2.1"
@@ -16,6 +18,8 @@ watchfaceComplicationsDataSourceKtx = "1.1.1"
 
 [libraries]
 horologist-composables = { module = "com.google.android.horologist:horologist-composables", version.ref = "horologistComposables" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 ui = { group = "androidx.compose.ui", name = "ui" }

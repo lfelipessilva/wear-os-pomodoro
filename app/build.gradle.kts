@@ -67,4 +67,6 @@ dependencies {
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
     implementation(libs.horologist.composables)
+    implementation(libs.navigation.compose)
+    implementation(libs.material3)
 }
