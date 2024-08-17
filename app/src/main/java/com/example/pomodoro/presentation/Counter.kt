@@ -1,5 +1,11 @@
 package com.example.pomodoro.presentation
 
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Vibrator
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,10 +47,23 @@ fun Counter(navController: NavController) {
     var startTime by remember { mutableIntStateOf(25 * 60) }
     var timeLeft by remember { mutableIntStateOf(startTime) }
     var isRunning by remember { mutableStateOf(true) }
+    val context = LocalContext.current
 
-    // Function to pause the timer
+    val progressAnimate by animateFloatAsState(
+        targetValue = timeLeft.toFloat() / startTime.toFloat(),
+        animationSpec = tween(
+            durationMillis = 300,
+            delayMillis = 0,
+            easing = LinearEasing
+        ), label = ""
+    )
+
     fun playPauseTimer() {
         isRunning = !isRunning
+        vibrate(
+            context,
+            50L
+        )
     }
 
     fun stopSkipTimer() {
@@ -53,16 +73,13 @@ fun Counter(navController: NavController) {
             timeLeft = if (mode == 0) 5 * 60 else 25 * 60
 
             mode = if (mode == 0) 1 else 0
-            return
         } else {
             navController.navigate("start_counter")
-            return
         }
 
     }
 
-    // Timer countdown logic
-    LaunchedEffect(isRunning) {
+    LaunchedEffect(isRunning, startTime) {
         if (isRunning && timeLeft > 0) {
             while (isRunning && timeLeft > 0) {
                 delay(1000L)
@@ -70,6 +87,10 @@ fun Counter(navController: NavController) {
             }
             if (timeLeft == 0) {
                 stopSkipTimer()
+                vibrate(
+                    context,
+                    500L
+                )
             }
         }
     }
@@ -83,7 +104,7 @@ fun Counter(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize(),
             startAngle = 270f,
-            progress = timeLeft.toFloat() / startTime.toFloat(),
+            progress = progressAnimate,
             strokeWidth = 10.dp,
             indicatorColor = MaterialTheme.colorScheme.primary,
         )
@@ -165,4 +186,10 @@ fun Counter(navController: NavController) {
         }
 
     }
+}
+
+@Suppress("DEPRECATION")
+fun vibrate(context: Context, duration: Long) {
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
 }
