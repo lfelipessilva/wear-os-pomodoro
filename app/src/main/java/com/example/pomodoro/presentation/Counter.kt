@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,7 +26,6 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
-import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.OutlinedButton
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
@@ -84,7 +84,8 @@ fun Counter(navController: NavController) {
                 .fillMaxSize(),
             startAngle = 270f,
             progress = timeLeft.toFloat() / startTime.toFloat(),
-            strokeWidth = 10.dp
+            strokeWidth = 10.dp,
+            indicatorColor = MaterialTheme.colorScheme.primary,
         )
 
         TimeText(modifier = Modifier.padding(8.dp))
@@ -102,14 +103,14 @@ fun Counter(navController: NavController) {
 
             Text(
                 text = if (mode == 0) "Focus" else "Break",
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = Color.LightGray
             )
 
             Text(
                 text = timeFormatted,
-                style = MaterialTheme.typography.display1,
+                style = MaterialTheme.typography.displayLarge,
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
@@ -123,7 +124,12 @@ fun Counter(navController: NavController) {
             ) {
                 Button(
                     onClick = { playPauseTimer() },
-                    modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
+                    modifier = Modifier.size(52.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = Color.White
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder(borderColor = MaterialTheme.colorScheme.secondary)
                 ) {
                     val iconId =
                         if (isRunning) R.drawable.baseline_pause_30 else R.drawable.baseline_play_arrow_30
@@ -137,9 +143,13 @@ fun Counter(navController: NavController) {
 
                 OutlinedButton(
                     onClick = { stopSkipTimer() },
-                    modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
+                    modifier = Modifier.size(52.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.Black,
+                        contentColor = Color.White
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder(borderColor = MaterialTheme.colorScheme.secondary)
                 ) {
-
                     val iconId =
                         if (isRunning) R.drawable.baseline_skip_next_30 else R.drawable.baseline_stop_30
                     val contentDescription = if (isRunning) "Skip" else "Stop"
@@ -149,7 +159,6 @@ fun Counter(navController: NavController) {
                         contentDescription,
                     )
                 }
-
 
             }
 

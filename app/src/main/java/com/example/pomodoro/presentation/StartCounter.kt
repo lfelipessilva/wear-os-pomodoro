@@ -7,10 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.ButtonDefaults
-import androidx.wear.compose.material.Icon
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import com.example.pomodoro.R
 
 @Composable
@@ -21,7 +21,7 @@ fun StartCounter(navController: NavController) {
     ) {
         Button(
             onClick = {navController.navigate("counter") },
-            modifier = Modifier.size(ButtonDefaults.LargeButtonSize)
+            modifier = Modifier.size(88.dp) // Extra large button
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_play_arrow_30),
