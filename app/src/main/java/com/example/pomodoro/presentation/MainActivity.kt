@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
@@ -31,8 +33,8 @@ import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.OutlinedButton
-import androidx.wear.compose.material.ProgressIndicatorDefaults
 import androidx.wear.compose.material.Text
+import androidx.wear.compose.material.TimeText
 import com.example.pomodoro.R
 import com.example.pomodoro.presentation.theme.PomodoroTheme
 import kotlinx.coroutines.delay
@@ -115,54 +117,68 @@ fun Counter() {
                 .fillMaxSize(),
             startAngle = 270f,
             progress = timeLeft.toFloat() / startTime.toFloat(),
-            strokeWidth = ProgressIndicatorDefaults.FullScreenStrokeWidth
+            strokeWidth = 10.dp
         )
 
-        Text(
-            text = timeFormatted,
-            style = MaterialTheme.typography.display1,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.primary,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(bottom = 24.dp)
-        )
+        TimeText(modifier = Modifier.padding(8.dp))
 
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(
-                space = 8.dp,
-                alignment = Alignment.CenterHorizontally
-            ),
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 24.dp)
+                .padding(top = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(
+                space = 8.dp,
+                alignment = Alignment.CenterVertically
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            OutlinedButton(
-                onClick = { finish() },
-                modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
+
+            Text(
+                text = if (mode == 0) "Focus" else "Break",
+                style = MaterialTheme.typography.body1,
+                textAlign = TextAlign.Center,
+                color = Color.LightGray
+            )
+
+            Text(
+                text = timeFormatted,
+                style = MaterialTheme.typography.display1,
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = 16.dp,
+                    alignment = Alignment.CenterHorizontally
+                ),
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_check_30),
-                    contentDescription = "Finish",
-                    modifier = Modifier.size(ButtonDefaults.LargeIconSize)
-                )
+                OutlinedButton(
+                    onClick = { finish() },
+                    modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_check_30),
+                        contentDescription = "Finish",
+                    )
+                }
+
+                Button(
+                    onClick = { playPauseTimer() },
+                    modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
+                ) {
+                    val iconId =
+                        if (isRunning) R.drawable.baseline_pause_30 else R.drawable.baseline_play_arrow_30
+                    val contentDescription = if (isRunning) "Pause" else "Play"
+
+                    Icon(
+                        painter = painterResource(id = iconId),
+                        contentDescription,
+                    )
+                }
             }
 
-            Button(
-                onClick = { playPauseTimer() },
-                modifier = Modifier.size(ButtonDefaults.SmallButtonSize)
-            ) {
-                val iconId =
-                    if (isRunning) R.drawable.baseline_pause_30 else R.drawable.baseline_play_arrow_30
-                val contentDescription = if (isRunning) "Pause" else "Play"
-
-                Icon(
-                    painter = painterResource(id = iconId),
-                    contentDescription,
-                    modifier = Modifier.size(ButtonDefaults.LargeIconSize)
-                )
-            }
         }
 
     }
