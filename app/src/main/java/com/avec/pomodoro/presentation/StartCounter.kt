@@ -11,10 +11,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.ui.platform.LocalContext
 import com.avec.pomodoro.R
+import com.avec.pomodoro.presentation.util.deleteNotification
 
 @Composable
 fun StartCounter(navController: NavController) {
+    val context = LocalContext.current
+    deleteNotification(context)
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()

@@ -69,4 +69,7 @@ dependencies {
     implementation(libs.horologist.composables)
     implementation(libs.navigation.compose)
     implementation(libs.material3)
+    implementation(libs.wear.ongoing)
+    implementation(libs.core)
+    implementation(libs.accompanist.permissions)
 }

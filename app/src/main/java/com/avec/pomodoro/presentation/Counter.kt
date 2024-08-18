@@ -1,5 +1,6 @@
 package com.avec.pomodoro.presentation
 
+import android.Manifest
 import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -37,18 +38,34 @@ import androidx.wear.compose.material.OutlinedButton
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.avec.pomodoro.R
+import com.avec.pomodoro.presentation.util.createNotification
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.delay
 import java.util.Locale
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Counter(navController: NavController) {
+    val postNotificationPermission =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+    LaunchedEffect(key1 = true) {
+        if (!postNotificationPermission.status.isGranted) {
+            postNotificationPermission.launchPermissionRequest()
+        }
+    }
+
     val steps by remember { mutableStateOf(arrayOf(0, 1, 0, 1, 0, 2)) }
     var currentStepIndex by remember { mutableIntStateOf(0) }
     var startTime by remember { mutableIntStateOf(25 * 60) }
     var timeLeft by remember { mutableIntStateOf(startTime) }
     var isRunning by remember { mutableStateOf(true) }
     val context = LocalContext.current
+
+    createNotification(context)
 
     val progressAnimate by animateFloatAsState(
         targetValue = timeLeft.toFloat() / startTime.toFloat(),
