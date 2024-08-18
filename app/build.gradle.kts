@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.pomodoro"
+    namespace = "com.avec.pomodoro"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.pomodoro"
+        applicationId = "com.avec.pomodoro"
         minSdk = 33
         targetSdk = 34
         versionCode = 1
