@@ -43,7 +43,8 @@ import java.util.Locale
 
 @Composable
 fun Counter(navController: NavController) {
-    var mode by remember { mutableIntStateOf(0) }
+    val steps by remember { mutableStateOf(arrayOf(0, 1, 0, 1, 0, 2)) }
+    var currentStepIndex by remember { mutableIntStateOf(0) }
     var startTime by remember { mutableIntStateOf(25 * 60) }
     var timeLeft by remember { mutableIntStateOf(startTime) }
     var isRunning by remember { mutableStateOf(true) }
@@ -67,12 +68,15 @@ fun Counter(navController: NavController) {
     }
 
     fun stopSkipTimer() {
-        // should skip
         if (isRunning) {
-            startTime = if (mode == 0) 5 * 60 else 25 * 60
-            timeLeft = if (mode == 0) 5 * 60 else 25 * 60
 
-            mode = if (mode == 0) 1 else 0
+            currentStepIndex = if (currentStepIndex + 1 < steps.size) currentStepIndex + 1 else 0
+
+            val newTime =
+                if (steps[currentStepIndex] == 0) 25 * 60 else if (steps[currentStepIndex] == 1) 5 * 60 else 15 * 60
+
+            startTime = newTime
+            timeLeft = newTime
         } else {
             navController.navigate("start_counter")
         }
@@ -123,15 +127,15 @@ fun Counter(navController: NavController) {
         ) {
 
             Text(
-                text = if (mode == 0) "Focus" else "Break",
-                style = MaterialTheme.typography.bodyLarge,
+                text = if (steps[currentStepIndex] == 0) "Focus" else if (steps[currentStepIndex] == 1) "Short Break" else "Long Break",
+                style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = Color.LightGray
             )
 
             Text(
                 text = timeFormatted,
-                style = MaterialTheme.typography.displayLarge,
+                style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.Center,
                 color = Color.White
             )
