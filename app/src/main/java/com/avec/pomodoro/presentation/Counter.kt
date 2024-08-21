@@ -38,6 +38,7 @@ import androidx.wear.compose.material.OutlinedButton
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.avec.pomodoro.R
+import com.avec.pomodoro.presentation.service.TimerService
 import com.avec.pomodoro.presentation.util.createNotification
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -48,7 +49,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun Counter(navController: NavController) {
+fun Counter(navController: NavController, timerService: TimerService) {
     val postNotificationPermission =
         rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
@@ -116,6 +117,7 @@ fun Counter(navController: NavController) {
         }
     }
 
+    val num = timerService.randomNumber
     val minutes = timeLeft / 60
     val seconds = timeLeft % 60
     val timeFormatted = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds)
@@ -151,7 +153,7 @@ fun Counter(navController: NavController) {
             )
 
             Text(
-                text = timeFormatted,
+                text = num.toString(),
                 style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.Center,
                 color = Color.White

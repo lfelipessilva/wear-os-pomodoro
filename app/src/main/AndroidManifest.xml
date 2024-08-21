@@ -24,6 +24,10 @@
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
 
+        <service
+            android:name=".presentation.service.TimerService"
+            >
+        </service>
         <activity
             android:name=".presentation.MainActivity"
             android:launchMode="singleTask"
