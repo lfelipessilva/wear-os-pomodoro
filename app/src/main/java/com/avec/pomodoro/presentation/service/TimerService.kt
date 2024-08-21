@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import com.avec.pomodoro.presentation.util.createNotification
 import kotlin.random.Random
 
 class TimerService : Service() {
@@ -29,13 +30,7 @@ class TimerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val notification = NotificationCompat.Builder(this, "pomodoro_notification_channel")
-            .setContentTitle("Timer Service")
-            .setContentText("The timer is running")
-            .setSmallIcon(android.R.drawable.star_on)
-            .build()
-
-        startForeground(1, notification)
+        createNotification(this)
     }
 
     override fun onBind(intent: Intent): IBinder {
