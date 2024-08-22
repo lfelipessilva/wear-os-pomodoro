@@ -25,6 +25,7 @@ fun StartCounter(navController: NavController, timerService: TimerService) {
         timerService.startTimer()
         navController.navigate("counter")
     }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()

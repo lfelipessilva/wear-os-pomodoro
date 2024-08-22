@@ -1,7 +1,5 @@
 package com.avec.pomodoro.presentation
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -22,12 +20,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.avec.pomodoro.presentation.service.TimerService
 import com.avec.pomodoro.presentation.theme.PomodoroTheme
+import com.avec.pomodoro.presentation.util.RequestPermissions
 
 class MainActivity : ComponentActivity() {
     private lateinit var timerService: TimerService
     private var isTimerServiceBound: Boolean = false
 
-    /** Defines callbacks for service binding, passed to bindService().  */
     private val connection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
@@ -45,39 +43,26 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setTheme(android.R.style.Theme_DeviceDefault)
+        installSplashScreen()
+
+        setContent {
+            RequestPermissions()
+            LoadingScreen()
+        }
+
         val intent = Intent(this, TimerService::class.java)
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(android.R.style.Theme_DeviceDefault)
-        installSplashScreen()
-
-        super.onCreate(savedInstanceState)
-
-        val notificationChannel = NotificationChannel(
-            "pomodoro_notification_channel",
-            "pomodoro",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        notificationManager.createNotificationChannel(notificationChannel)
-
-
-        setContent {
-            LoadingScreen()
-        }
-    }
-
     override fun onStop() {
         super.onStop()
-        unbindService(connection)
-        isTimerServiceBound = false
+        if (isTimerServiceBound) {
+            unbindService(connection)
+            isTimerServiceBound = false
+        }
     }
 }
 
@@ -94,7 +79,12 @@ fun WearApp(timerService: TimerService) {
         val navController = rememberNavController()
 
         NavHost(navController = navController, startDestination = "start_counter") {
-            composable("start_counter") { StartCounter(navController = navController, timerService = timerService) }
+            composable("start_counter") {
+                StartCounter(
+                    navController = navController,
+                    timerService = timerService
+                )
+            }
             composable("counter") {
                 Counter(
                     navController = navController,

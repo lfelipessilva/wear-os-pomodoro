@@ -1,10 +1,17 @@
 package com.avec.pomodoro.presentation.service
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
-import com.avec.pomodoro.presentation.util.createNotification
+import androidx.core.app.NotificationCompat
+import com.avec.pomodoro.R
+import com.avec.pomodoro.presentation.MainActivity
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +32,22 @@ class TimerService : Service() {
     val currentStep: StateFlow<Int> get() = _currentStep
 
     private var timerJob: Job? = null
-
     private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+        startForegroundService()
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        return binder
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineScope.cancel() // Clean up coroutine scope on destroy
+    }
 
     fun startTimer() {
         if (_isRunning.value) return
@@ -70,27 +91,58 @@ class TimerService : Service() {
         _timeLeft.value = stepDuration
     }
 
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = "pomodoro_notification_channel"
+            val channelName = "Pomodoro Timer Service"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelId, channelName, importance).apply {
+                description = "Channel for Pomodoro Timer Service"
+            }
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun startForegroundService() {
+        val notification = createNotification()
+        startForeground(NOTIFICATION_ID, notification)
+    }
+
+    private fun createNotification(): Notification {
+        val channelId = "pomodoro_notification_channel"
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Pomodoro Timer")
+            .setContentText("Pomodoro timer is running")
+            .setSmallIcon(R.drawable.tomato_svgrepo_com)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .setContentIntent(createPendingIntent()) // Add pending intent
+            .setAutoCancel(false) // Do not dismiss on click
+
+        return notificationBuilder.build()
+    }
+
+    private fun createPendingIntent(): PendingIntent {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        return PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
     inner class LocalBinder : Binder() {
         fun getService(): TimerService = this@TimerService
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        createNotification(this)
-    }
-
-    override fun onBind(intent: Intent): IBinder {
-        return binder
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        coroutineScope.cancel() // Clean up coroutine scope on destroy
-    }
-
     companion object {
-        private const val FOCUS_TIME = 25 * 60 * 1000L // 25min
-        private const val SHORT_BREAK_TIME = 5 * 60 * 1000L // 5min
-        private const val LONG_BREAK_TIME = 15 * 60 * 1000L // 15min
+        private const val NOTIFICATION_ID = 1
+        private const val FOCUS_TIME = 25 * 60 * 1000L // 25 minutes
+        private const val SHORT_BREAK_TIME = 5 * 60 * 1000L // 5 minutes
+        private const val LONG_BREAK_TIME = 15 * 60 * 1000L // 15 minutes
     }
 }
