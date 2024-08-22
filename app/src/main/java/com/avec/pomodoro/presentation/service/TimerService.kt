@@ -1,17 +1,9 @@
 package com.avec.pomodoro.presentation.service
 
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.pm.ServiceInfo
 import android.os.Binder
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import androidx.core.app.ServiceCompat
-import androidx.wear.ongoing.OngoingActivity
-import androidx.wear.ongoing.Status
-import com.avec.pomodoro.R
-import com.avec.pomodoro.presentation.MainActivity
 import com.avec.pomodoro.presentation.util.createForegroundNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

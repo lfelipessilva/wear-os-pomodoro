@@ -12,7 +12,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,13 +67,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setTheme(android.R.style.Theme_DeviceDefault)
 
-        val intent = Intent(this, TimerService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
-        this.startForegroundService(intent)
-
         installSplashScreen()
 
         createNotificationChannel()
+
+        val intent = Intent(this, TimerService::class.java)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+
+        this.startForegroundService(intent)
+
 
         setContent {
             RequestPermissions()
@@ -92,8 +95,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LoadingScreen() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
+    PomodoroTheme {
+
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(indicatorColor = MaterialTheme.colorScheme.primary)
+        }
     }
 }
 

@@ -1,14 +1,10 @@
 package com.avec.pomodoro.presentation.util
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
-import androidx.core.content.ContextCompat
 import androidx.wear.ongoing.OngoingActivity
 import androidx.wear.ongoing.Status
 import com.avec.pomodoro.R
@@ -34,7 +30,7 @@ fun createForegroundNotification(context: TimerService) {
         .setContentTitle("Pomodoro Timer")
         .setContentText("Timer is running")
         .setSmallIcon(android.R.drawable.star_on)
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setPriority(NotificationCompat.PRIORITY_MAX)
         .setOngoing(true)
 
     val ongoingActivityStatus = Status.Builder()
