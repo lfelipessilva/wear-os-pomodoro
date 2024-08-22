@@ -1,5 +1,7 @@
 package com.avec.pomodoro.presentation
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -26,8 +28,25 @@ class MainActivity : ComponentActivity() {
     private lateinit var timerService: TimerService
     private var isTimerServiceBound: Boolean = false
 
-    private val connection = object : ServiceConnection {
+    private fun createNotificationChannel() {
+        val channelId = "pomodoro_notification_channel"
+        val channelName = "Pomodoro Notifications"
+        val channelDescription = "Pomodoro notification channel"
+        val notificationChannel = NotificationChannel(
+            channelId,
+            channelName,
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = channelDescription
+        }
 
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        notificationManager.createNotificationChannel(notificationChannel)
+    }
+
+    private val connection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as TimerService.LocalBinder
             timerService = binder.getService()
@@ -46,15 +65,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(android.R.style.Theme_DeviceDefault)
+
+        val intent = Intent(this, TimerService::class.java)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        this.startForegroundService(intent)
+
         installSplashScreen()
+
+        createNotificationChannel()
 
         setContent {
             RequestPermissions()
             LoadingScreen()
         }
 
-        val intent = Intent(this, TimerService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onStop() {

@@ -1,18 +1,22 @@
 package com.avec.pomodoro.presentation.util
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
 import androidx.wear.ongoing.OngoingActivity
 import androidx.wear.ongoing.Status
 import com.avec.pomodoro.R
 import com.avec.pomodoro.presentation.MainActivity
+import com.avec.pomodoro.presentation.service.TimerService
 
 
-fun createNotification(context: Context) {
-    val notificationManager = context.getSystemService(NotificationManager::class.java)
+fun createForegroundNotification(context: TimerService) {
 
     val notificationIntent = Intent(
         context,
@@ -27,11 +31,10 @@ fun createNotification(context: Context) {
     )
 
     val notificationBuilder = NotificationCompat.Builder(context, "pomodoro_notification_channel")
-        .setContentTitle("Pomodoro")
-        .setContentText("Pomodoro timer in running")
-        .setSmallIcon(R.drawable.tomato_svgrepo_com)
-        .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
-        .setContentIntent(contentIntent)
+        .setContentTitle("Pomodoro Timer")
+        .setContentText("Timer is running")
+        .setSmallIcon(android.R.drawable.star_on)
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setOngoing(true)
 
     val ongoingActivityStatus = Status.Builder()
@@ -44,19 +47,15 @@ fun createNotification(context: Context) {
         )
             .setAnimatedIcon(R.drawable.tomato_svgrepo_com)
             .setStaticIcon(R.drawable.tomato_svgrepo_com)
-            .setTouchIntent(contentIntent)
             .setStatus(ongoingActivityStatus)
+            .setTouchIntent(contentIntent)
             .build()
-
 
     ongoingActivity.apply(context)
 
-    val notification = notificationBuilder.build()
-    notificationManager.notify(1, notification)
+    ServiceCompat.startForeground(
+        context, 1, notificationBuilder.build(),
+        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+    )
 }
 
-fun deleteNotification(context: Context) {
-    val notificationManager = context.getSystemService(NotificationManager::class.java)
-
-    notificationManager.cancelAll()
-}

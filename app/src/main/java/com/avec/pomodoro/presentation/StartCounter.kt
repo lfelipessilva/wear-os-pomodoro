@@ -14,12 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.avec.pomodoro.R
 import com.avec.pomodoro.presentation.service.TimerService
-import com.avec.pomodoro.presentation.util.deleteNotification
 
 @Composable
 fun StartCounter(navController: NavController, timerService: TimerService) {
     val context = LocalContext.current
-    deleteNotification(context)
 
     fun handleClick() {
         timerService.startTimer()
