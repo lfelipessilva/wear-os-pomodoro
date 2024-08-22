@@ -17,8 +17,6 @@ import com.avec.pomodoro.presentation.service.TimerService
 
 @Composable
 fun StartCounter(navController: NavController, timerService: TimerService) {
-    val context = LocalContext.current
-
     fun handleClick() {
         timerService.startTimer()
         navController.navigate("counter")
@@ -37,6 +35,5 @@ fun StartCounter(navController: NavController, timerService: TimerService) {
                 contentDescription = "Start",
             )
         }
-
     }
 }

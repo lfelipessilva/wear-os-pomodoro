@@ -1,8 +1,5 @@
 package com.avec.pomodoro.presentation
 
-import android.content.Context
-import android.os.VibrationEffect
-import android.os.Vibrator
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -36,6 +33,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.avec.pomodoro.R
 import com.avec.pomodoro.presentation.service.TimerService
+import com.avec.pomodoro.presentation.util.vibrate
 import java.util.Locale
 
 
@@ -44,19 +42,16 @@ fun Counter(navController: NavController, timerService: TimerService) {
     val steps by remember { mutableStateOf(arrayOf(0, 1, 0, 1, 0, 2)) }
     val isRunning by timerService.isRunning.collectAsState()
     val currentStep by timerService.currentStep.collectAsState()
-
     val context = LocalContext.current
 
     fun playPauseTimer() {
+        vibrate(50L, context)
         if (isRunning)
             timerService.pauseTimer() else timerService.resumeTimer()
-        vibrate(
-            context,
-            50L
-        )
     }
 
     fun stopSkipTimer() {
+        vibrate(100L, context)
         if (isRunning) {
             timerService.skipTimer()
         } else {
@@ -153,7 +148,6 @@ fun TimerDisplay(timerService: TimerService) {
     )
 }
 
-
 @Composable
 fun Progress(timerService: TimerService) {
     val timeLeft by timerService.timeLeft.collectAsState()
@@ -176,10 +170,4 @@ fun Progress(timerService: TimerService) {
         strokeWidth = 10.dp,
         indicatorColor = MaterialTheme.colorScheme.primary,
     )
-}
-
-@Suppress("DEPRECATION")
-fun vibrate(context: Context, duration: Long) {
-    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
 }
