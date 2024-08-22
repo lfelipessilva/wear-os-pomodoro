@@ -17,13 +17,15 @@ fun createForegroundNotification(context: TimerService) {
     val notificationIntent = Intent(
         context,
         MainActivity::class.java
-    )
+    ).apply {
+        flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+    }
 
     val contentIntent = PendingIntent.getActivity(
         context,
         1,
         notificationIntent,
-        PendingIntent.FLAG_MUTABLE
+        PendingIntent.FLAG_IMMUTABLE
     )
 
     val notificationBuilder = NotificationCompat.Builder(context, "pomodoro_notification_channel")

@@ -1,9 +1,11 @@
 package com.avec.pomodoro.presentation.service
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import android.os.PowerManager
 import com.avec.pomodoro.presentation.util.createForegroundNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +39,7 @@ class TimerService : Service() {
     val currentStep: StateFlow<Int> get() = _currentStep
 
     private var timerJob: Job? = null
-
+    private var wakeLock: PowerManager.WakeLock? = null
 
     fun startTimer() {
         if (_isRunning.value) return
@@ -94,8 +96,22 @@ class TimerService : Service() {
         createForegroundNotification(this)
     }
 
+    @SuppressLint("WakelockTimeout")
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+
+        wakeLock =
+            powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "EndlessService::lock").apply {
+                acquire()
+            }
+
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        coroutineScope.cancel()
+        wakeLock?.run {
+            if (isHeld) release()
+        }
     }
 }
