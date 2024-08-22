@@ -85,7 +85,6 @@ class MainActivity : ComponentActivity() {
 fun LoadingScreen() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
-
     }
 }
 
@@ -95,7 +94,7 @@ fun WearApp(timerService: TimerService) {
         val navController = rememberNavController()
 
         NavHost(navController = navController, startDestination = "start_counter") {
-            composable("start_counter") { StartCounter(navController = navController) }
+            composable("start_counter") { StartCounter(navController = navController, timerService = timerService) }
             composable("counter") {
                 Counter(
                     navController = navController,

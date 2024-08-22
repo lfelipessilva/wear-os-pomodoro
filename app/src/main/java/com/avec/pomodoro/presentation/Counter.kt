@@ -1,6 +1,5 @@
 package com.avec.pomodoro.presentation
 
-import android.Manifest
 import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -16,12 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,46 +36,20 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.avec.pomodoro.R
 import com.avec.pomodoro.presentation.service.TimerService
-import com.avec.pomodoro.presentation.util.createNotification
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import kotlinx.coroutines.delay
 import java.util.Locale
 
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun Counter(navController: NavController, timerService: TimerService) {
-    val postNotificationPermission =
-        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
-
-    LaunchedEffect(key1 = true) {
-        if (!postNotificationPermission.status.isGranted) {
-            postNotificationPermission.launchPermissionRequest()
-        }
-    }
-
     val steps by remember { mutableStateOf(arrayOf(0, 1, 0, 1, 0, 2)) }
-    var currentStepIndex by remember { mutableIntStateOf(0) }
-    var startTime by remember { mutableIntStateOf(25 * 60) }
-    var timeLeft by remember { mutableIntStateOf(startTime) }
-    var isRunning by remember { mutableStateOf(true) }
+    val isRunning by timerService.isRunning.collectAsState()
+    val currentStep by timerService.currentStep.collectAsState()
+
     val context = LocalContext.current
 
-    createNotification(context)
-
-    val progressAnimate by animateFloatAsState(
-        targetValue = timeLeft.toFloat() / startTime.toFloat(),
-        animationSpec = tween(
-            durationMillis = 300,
-            delayMillis = 0,
-            easing = LinearEasing
-        ), label = ""
-    )
-
     fun playPauseTimer() {
-        isRunning = !isRunning
+        if (isRunning)
+            timerService.pauseTimer() else timerService.resumeTimer()
         vibrate(
             context,
             50L
@@ -87,53 +58,16 @@ fun Counter(navController: NavController, timerService: TimerService) {
 
     fun stopSkipTimer() {
         if (isRunning) {
-
-            currentStepIndex = if (currentStepIndex + 1 < steps.size) currentStepIndex + 1 else 0
-
-            val newTime =
-                if (steps[currentStepIndex] == 0) 25 * 60 else if (steps[currentStepIndex] == 1) 5 * 60 else 15 * 60
-
-            startTime = newTime
-            timeLeft = newTime
+            timerService.skipTimer()
         } else {
+            timerService.stopSelf()
             navController.navigate("start_counter")
         }
-
     }
-
-    LaunchedEffect(isRunning, startTime) {
-        if (isRunning && timeLeft > 0) {
-            while (isRunning && timeLeft > 0) {
-                delay(1000L)
-                timeLeft -= 1
-            }
-            if (timeLeft == 0) {
-                stopSkipTimer()
-                vibrate(
-                    context,
-                    500L
-                )
-            }
-        }
-    }
-
-    val num = timerService.randomNumber
-    val minutes = timeLeft / 60
-    val seconds = timeLeft % 60
-    val timeFormatted = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds)
 
     Box(modifier = Modifier.fillMaxSize()) {
-        CircularProgressIndicator(
-            modifier = Modifier
-                .fillMaxSize(),
-            startAngle = 270f,
-            progress = progressAnimate,
-            strokeWidth = 10.dp,
-            indicatorColor = MaterialTheme.colorScheme.primary,
-        )
-
+        Progress(timerService = timerService)
         TimeText(modifier = Modifier.padding(8.dp))
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -146,19 +80,12 @@ fun Counter(navController: NavController, timerService: TimerService) {
         ) {
 
             Text(
-                text = if (steps[currentStepIndex] == 0) "Focus" else if (steps[currentStepIndex] == 1) "Short Break" else "Long Break",
+                text = if (steps[currentStep] == 0) "Focus" else if (steps[currentStep] == 1) "Short Break" else "Long Break",
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = Color.LightGray
             )
-
-            Text(
-                text = num.toString(),
-                style = MaterialTheme.typography.displayMedium,
-                textAlign = TextAlign.Center,
-                color = Color.White
-            )
-
+            TimerDisplay(timerService)
             Row(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.spacedBy(
@@ -209,6 +136,46 @@ fun Counter(navController: NavController, timerService: TimerService) {
         }
 
     }
+}
+
+@Composable
+fun TimerDisplay(timerService: TimerService) {
+    val timeLeft by timerService.timeLeft.collectAsState()
+    val minutes = timeLeft / 1000 / 60
+    val seconds = timeLeft / 1000 % 60
+    val timeFormatted = String.format(Locale.ENGLISH, "%02d:%02d", minutes, seconds)
+
+    Text(
+        text = timeFormatted,
+        style = MaterialTheme.typography.displayMedium,
+        textAlign = TextAlign.Center,
+        color = Color.White
+    )
+}
+
+
+@Composable
+fun Progress(timerService: TimerService) {
+    val timeLeft by timerService.timeLeft.collectAsState()
+    val totalTime by timerService.totalTime.collectAsState()
+
+    val progressAnimate by animateFloatAsState(
+        targetValue = timeLeft.toFloat() / totalTime.toFloat(),
+        animationSpec = tween(
+            durationMillis = 300,
+            delayMillis = 0,
+            easing = LinearEasing
+        ), label = ""
+    )
+
+    CircularProgressIndicator(
+        modifier = Modifier
+            .fillMaxSize(),
+        startAngle = 270f,
+        progress = progressAnimate,
+        strokeWidth = 10.dp,
+        indicatorColor = MaterialTheme.colorScheme.primary,
+    )
 }
 
 @Suppress("DEPRECATION")
