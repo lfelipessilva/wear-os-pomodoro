@@ -69,13 +69,13 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen()
 
-        createNotificationChannel()
 
         val intent = Intent(this, TimerService::class.java)
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         this.startForegroundService(intent)
 
+        createNotificationChannel()
 
         setContent {
             RequestPermissions()
