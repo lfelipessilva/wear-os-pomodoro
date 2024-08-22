@@ -2,16 +2,17 @@ package com.avec.pomodoro.presentation.service
 
 import android.annotation.SuppressLint
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
 import com.avec.pomodoro.presentation.util.createForegroundNotification
+import com.avec.pomodoro.presentation.util.vibrate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +55,7 @@ class TimerService : Service() {
 
             _isRunning.value = false
             advanceToNextStep()
+            vibrate(1000L, this@TimerService)
         }
     }
 
@@ -66,10 +68,17 @@ class TimerService : Service() {
         if (!_isRunning.value) startTimer()
     }
 
+    fun resetTimer() {
+        timerJob?.cancel()
+
+        _currentStep.value = 0
+        _totalTime.value = FOCUS_TIME
+        _timeLeft.value = FOCUS_TIME
+    }
+
     fun skipTimer() {
         pauseTimer()
         advanceToNextStep()
-        startTimer()
     }
 
     private fun advanceToNextStep() {
@@ -81,7 +90,10 @@ class TimerService : Service() {
         }
         _totalTime.value = stepDuration
         _timeLeft.value = stepDuration
+
+        startTimer()
     }
+
 
     inner class LocalBinder : Binder() {
         fun getService(): TimerService = this@TimerService

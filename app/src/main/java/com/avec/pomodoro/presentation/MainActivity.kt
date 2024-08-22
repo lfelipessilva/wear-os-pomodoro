@@ -108,7 +108,7 @@ fun WearApp(timerService: TimerService) {
     PomodoroTheme {
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = "start_counter") {
+        NavHost(navController = navController, startDestination = "counter") {
             composable("start_counter") {
                 StartCounter(
                     navController = navController,

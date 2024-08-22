@@ -55,7 +55,7 @@ fun Counter(navController: NavController, timerService: TimerService) {
         if (isRunning) {
             timerService.skipTimer()
         } else {
-            timerService.stopSelf()
+            timerService.resetTimer()
             navController.navigate("start_counter")
         }
     }
