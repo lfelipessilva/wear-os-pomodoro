@@ -29,7 +29,7 @@ fun createForegroundNotification(context: TimerService) {
     val notificationBuilder = NotificationCompat.Builder(context, "pomodoro_notification_channel")
         .setContentTitle("Pomodoro Timer")
         .setContentText("Timer is running")
-        .setSmallIcon(android.R.drawable.star_on)
+        .setSmallIcon(R.drawable.tomato_svgrepo_com)
         .setPriority(NotificationCompat.PRIORITY_MAX)
         .setOngoing(true)
 
