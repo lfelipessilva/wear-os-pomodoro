@@ -1,5 +1,6 @@
 package com.avec.pomodoro.presentation
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -16,10 +17,21 @@ import com.avec.pomodoro.R
 import com.avec.pomodoro.presentation.service.TimerService
 
 @Composable
-fun StartCounter(navController: NavController, timerService: TimerService) {
+fun StartCounter(navController: NavController) {
+    var isTimerServiceRunning = false
+    val context = LocalContext.current
+
+    val intent = Intent(context, TimerService::class.java)
+
     fun handleClick() {
-        timerService.startTimer()
-        navController.navigate("counter")
+        if (isTimerServiceRunning) {
+            context.stopService(intent)
+            isTimerServiceRunning = false
+        } else {
+            context.startForegroundService(intent)
+            isTimerServiceRunning = true
+            navController.navigate("counter")
+        }
     }
 
     Box(
