@@ -42,7 +42,7 @@ class TimerService : Service() {
     private var timerJob: Job? = null
     private var wakeLock: PowerManager.WakeLock? = null
 
-    fun startTimer() {
+    private fun startTimer() {
         if (_isRunning.value) return
 
         timerJob = coroutineScope.launch {
@@ -108,6 +108,10 @@ class TimerService : Service() {
         createForegroundNotification(this)
     }
 
+    fun stopService() {
+        stopSelf()
+    }
+
     @SuppressLint("WakelockTimeout")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
@@ -117,6 +121,7 @@ class TimerService : Service() {
                 acquire()
             }
 
+        startTimer()
         return super.onStartCommand(intent, flags, startId)
     }
 
