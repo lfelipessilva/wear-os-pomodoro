@@ -3,6 +3,18 @@
 
 Simple pomodoro app for Wear OS 4.0 or higher
 
+## TODO
+
+- change primary colo
+- awake screen on app when timer ends
+- Add settings page
+  - change focus timer
+  - change short break time
+  - change long break time
+  - change short break quantity before long break
+
+
+
 ## Authors
 
 - [@luisfelipess](https://www.github.com/luisfelipess)
