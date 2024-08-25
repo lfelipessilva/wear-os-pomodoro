@@ -5,7 +5,7 @@ Simple pomodoro app for Wear OS 4.0 or higher
 
 ## TODO
 
-- change primary colo
+- change primary color
 - awake screen on app when timer ends
 - Add settings page
   - change focus timer
