@@ -141,13 +141,12 @@ fun Counter(navController: NavController) {
                         onClick = { playPauseTimer() },
                         modifier = Modifier.size(52.dp),
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colorScheme.secondary,
+                            backgroundColor = Color.Black,
                             contentColor = Color.White
                         ),
-                        border = ButtonDefaults.outlinedButtonBorder(borderColor = MaterialTheme.colorScheme.secondary)
                     ) {
                         val iconId =
-                            if (isRunning) R.drawable.baseline_pause_30 else R.drawable.baseline_play_arrow_30
+                            if (isRunning) R.drawable.pause_fill else R.drawable.play_fill
                         val contentDescription = if (isRunning) "Pause" else "Play"
 
                         Icon(
@@ -156,17 +155,16 @@ fun Counter(navController: NavController) {
                         )
                     }
 
-                    OutlinedButton(
+                    Button(
                         onClick = { stopSkipTimer() },
                         modifier = Modifier.size(52.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Black,
                             contentColor = Color.White
                         ),
-                        border = ButtonDefaults.outlinedButtonBorder(borderColor = MaterialTheme.colorScheme.secondary)
                     ) {
                         val iconId =
-                            if (isRunning) R.drawable.baseline_skip_next_30 else R.drawable.baseline_stop_30
+                            if (isRunning) R.drawable.fast_forward_fill else R.drawable.stop_fill
                         val contentDescription = if (isRunning) "Skip" else "Stop"
 
                         Icon(

@@ -43,7 +43,7 @@ fun StartCounter(navController: NavController) {
             modifier = Modifier.size(88.dp) // Extra large button
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.baseline_play_arrow_30),
+                painter = painterResource(id = R.drawable.play_fill),
                 contentDescription = "Start",
             )
         }
